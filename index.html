@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dictionary</title>
+</head>
+<body>
+    <div class="container">
+        <h1 style="align-self: center;">Dictionary</h1>
+
+        <div class="box">
+            <input type="text" placeholder="Ask me any word" id="wordInput">
+            <button class="btn">Click</button>
+
+            <div class="display"></div>
+        </div>
+    </div>
+
+    <script>
+        const api = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+        const input = document.querySelector('#wordInput');
+        const output = document.querySelector('.display');
+        const button = document.querySelector('.btn');
+
+        button.addEventListener('click', async () => {
+            const word = input.value.trim();
+            console.log("Searching for:", word);
+
+            if (!word) {
+                output.innerHTML = "<p>Please write any word</p>";
+                return;
+            }
+
+            try {
+                const response = await fetch(api + word);
+                const data = await response.json();
+                console.log(data);
+
+                // 🔥 Fix: Correct condition
+                if (data.title === "No Definitions Found") {
+                    output.innerHTML = `<p>No result found for "${word}"</p>`;
+                } else {
+                    output.innerHTML = `
+                        <h2>${data[0].word}</h2>
+                        <p><strong>Meaning:</strong> ${data[0].meanings[0].definitions[0].definition}</p>
+                        <p><strong>Example:</strong> ${data[0].meanings[0].definitions[0].example || "No example available"}</p>
+                    `;
+                }
+            } catch (error) {
+                output.innerHTML = "<p>An error occurred.</p>";
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
